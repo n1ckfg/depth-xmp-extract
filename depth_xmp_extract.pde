@@ -17,7 +17,7 @@ void setup() {
   
   depthGfx = createGraphics(depthImg.height/2, depthImg.width/2, P2D);
   rgbGfx = createGraphics(depthImg.height/2, depthImg.width/2, P2D);
-  surface.setSize(depthGfx.width, depthGfx.height);
+  surface.setSize(depthGfx.width, depthGfx.height*4);
 
   depthGfx.beginDraw();
   depthGfx.pushMatrix();
@@ -39,13 +39,9 @@ void setup() {
   rgbGfx.endDraw();
 }
 void draw() {
-  if (showRgb) {
-    image(rgbGfx, 0, 0);
-  } else {
-    image(depthGfx, 0, 0);
-  }
-}
+  image(rgbGfx, 0, 0);
+  image(depthGfx, 200, height*4);
 
-void keyPressed() {
-  showRgb = !showRgb;
+  saveFrame("output.png");
+  exit();
 }
