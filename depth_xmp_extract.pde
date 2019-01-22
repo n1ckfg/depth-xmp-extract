@@ -1,4 +1,4 @@
-PImage rgbImg, depthImg;
+PImage rgbImg, depthImg, origImg;
 PGraphics rgbGfx1, depthGfx1, rgbGfx2, depthGfx2;
 //String fileName = "output.png";
 boolean showRgb = false;
@@ -9,11 +9,12 @@ int scaleFactor = 3;
 
 void setup() {
   size(50, 50, P2D);
-  fileSetup();
-
+  //fileSetup();
+  imageToXmpSample("002/00100dPORTRAIT_00100_BURST20190117154125453_COVER.jpg");
+  
   depthImg = loadImage("002/depthmap.png");
   rgbImg = loadImage("002/00000PORTRAIT_00000_BURST20190117154125453.jpg");
-
+  
   depthImg.loadPixels();
   for (int i=0; i<depthImg.pixels.length; i++) {
     float f = red(depthImg.pixels[i]);
@@ -59,5 +60,5 @@ void draw() {
     //firstRun = false;
   //}
   
-  fileLoop();
+  //fileLoop();
 }
