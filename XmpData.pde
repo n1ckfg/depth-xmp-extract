@@ -7,6 +7,31 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+// https://developers.google.com/depthmap-metadata/encoding
+// https://www.codeproject.com/Articles/991837/Googles-Depth-Map
+// https://developers.google.com/depthmap-metadata/reference
+// https://github.com/drewnoakes/metadata-extractor/wiki/Getting-Started-(Java)
+
+void imageToXmpSample(String url) {
+  xmpParser(imageToInputStream(url));
+}
+
+void xmpParser(InputStream imageStream) {
+  try {
+    try {
+      try {
+        xmpImageParser(imageStream);  
+      } catch (ImageProcessingException eee) { 
+        println(eee);
+      }
+    } catch (XMPException ee) { 
+      println(ee);
+    }
+  } catch (IOException e) { 
+    println(e);
+  }
+}
+
 InputStream imageToInputStream(String url) {
   url = sketchPath() + "/data/" + url;
   println(url);
@@ -24,26 +49,25 @@ InputStream imageToInputStream(String url) {
   return null;
 }
 
-void doXmpParser(InputStream imageStream) {
-  try {
-    try {
-      try {
-        xmpParser(imageStream);  
-      } catch (ImageProcessingException eee) { 
-        println(eee);
-      }
-    } catch (XMPException ee) { 
-      println(ee);
+void xmpImageParser(InputStream imageStream) throws XMPException, ImageProcessingException, IOException {
+  // Extract metadata from the image
+  Metadata metadata = ImageMetadataReader.readMetadata(imageStream);
+  for (Directory directory : metadata.getDirectories()) {
+    for (Tag tag : directory.getTags()) {
+      System.out.println(tag);
     }
-  } catch (IOException e) { 
-    println(e);
   }
+  
+  // obtain a specific directory
+  ExifImageDirectory directory = metadata.getFirstDirectoryOfType(ExifImageDirectory.class);
+  
+  // create a descriptor
+  ExifImageDescriptor descriptor;
+  descriptor = new ExifImageDescriptor(directory);
+  println(descriptor);
+  
+  // get tag description
 }
-
-void imageToXmpSample(String url) {
-  doXmpParser(imageToInputStream(url));
-}
-
 
 /**
  * Shows basic extraction and iteration of XMP data.
@@ -53,12 +77,10 @@ void imageToXmpSample(String url) {
  * @author Drew Noakes https://drewnoakes.com
  */
 
-void xmpParser(InputStream imageStream) throws XMPException, ImageProcessingException, IOException {
+void xmpExampleParser(InputStream imageStream) throws XMPException, ImageProcessingException, IOException {
 
   // Extract metadata from the image
   Metadata metadata = ImageMetadataReader.readMetadata(imageStream);
-  println("Begin parsing");
-  println("directories: " + metadata.getDirectoriesOfType(XmpDirectory.class).size());
 
   // Iterate through any XMP directories we may have received
   for (XmpDirectory xmpDirectory : metadata.getDirectoriesOfType(XmpDirectory.class)) {
