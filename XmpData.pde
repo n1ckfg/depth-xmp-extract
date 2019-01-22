@@ -49,7 +49,7 @@ InputStream imageToInputStream(String url) {
   return null;
 }
 
-void xmpImageParser(InputStream imageStream) throws XMPException, ImageProcessingException, IOException {
+PImage xmpImageParser(InputStream imageStream) throws XMPException, ImageProcessingException, IOException {
   // Extract metadata from the image
   Metadata metadata = ImageMetadataReader.readMetadata(imageStream);
   for (Directory directory : metadata.getDirectories()) {
@@ -57,16 +57,10 @@ void xmpImageParser(InputStream imageStream) throws XMPException, ImageProcessin
       System.out.println(tag);
     }
   }
-  
-  // obtain a specific directory
-  ExifImageDirectory directory = metadata.getFirstDirectoryOfType(ExifImageDirectory.class);
-  
-  // create a descriptor
-  ExifImageDescriptor descriptor;
-  descriptor = new ExifImageDescriptor(directory);
-  println(descriptor);
-  
-  // get tag description
+  byte[] bytes = new byte[16836747];
+  XmpReader reader = new XmpReader();
+  reader.extract(bytes, metadata);
+  return imageFromBytes(bytes);
 }
 
 /**
