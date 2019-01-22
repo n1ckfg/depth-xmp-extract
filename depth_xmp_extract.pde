@@ -1,14 +1,15 @@
 PImage rgbImg, depthImg;
 PGraphics rgbGfx1, depthGfx1, rgbGfx2, depthGfx2;
-String fileName = "output.png";
+//String fileName = "output.png";
 boolean showRgb = false;
 int blackPoint = 100;
 int whitePoint = 150;
-boolean firstRun = true;
+//boolean firstRun = true;
 int scaleFactor = 3;
 
 void setup() {
   size(50, 50, P2D);
+  fileSetup();
 
   depthImg = loadImage("002/depthmap.png");
   rgbImg = loadImage("002/00000PORTRAIT_00000_BURST20190117154125453.jpg");
@@ -53,8 +54,10 @@ void draw() {
   image(rgbGfx2, 0, 0);
   image(depthGfx2, width/2, 0);
   
-  if (firstRun) {
-    saveFrame(fileName);
-    firstRun = false;
-  }
+  //if (firstRun) {
+    //saveFrame(fileName);
+    //firstRun = false;
+  //}
+  
+  fileLoop();
 }
