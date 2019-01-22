@@ -1,6 +1,6 @@
 PImage rgbImg, depthImg;
 PGraphics rgbGfx1, depthGfx1, rgbGfx2, depthGfx2;
-
+String fileName = "output.png";
 boolean showRgb = false;
 int blackPoint = 100;
 int whitePoint = 150;
@@ -54,7 +54,7 @@ void draw() {
   image(depthGfx2, width/2, 0);
   
   if (firstRun) {
-    saveFrame("output.png");
+    saveFrame(fileName);
     firstRun = false;
   }
 }
