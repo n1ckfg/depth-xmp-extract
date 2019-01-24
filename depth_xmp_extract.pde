@@ -10,8 +10,9 @@ int scaleFactor = 3;
 void setup() {
   size(50, 50, P2D);
   //fileSetup();
-  imageToXmpSample("002/00100dPORTRAIT_00100_BURST20190117154125453_COVER.jpg");
+  PImage img = imageToXmpData("002/00100dPORTRAIT_00100_BURST20190117154125453_COVER.jpg");
   
+  /*
   depthImg = loadImage("002/depthmap.png");
   rgbImg = loadImage("002/00000PORTRAIT_00000_BURST20190117154125453.jpg");
   
@@ -38,8 +39,10 @@ void setup() {
   rgbGfx1.beginDraw();
   rgbGfx1.image(rgbImg, 0, 0, w, h);
   rgbGfx1.endDraw();
+  */
 }
 void draw() {
+  /*
   depthGfx2.beginDraw();
   depthGfx2.translate(depthGfx2.width,0);
   depthGfx2.rotate(radians(90));
@@ -54,7 +57,7 @@ void draw() {
   
   image(rgbGfx2, 0, 0);
   image(depthGfx2, width/2, 0);
-  
+  */
   //if (firstRun) {
     //saveFrame(fileName);
     //firstRun = false;

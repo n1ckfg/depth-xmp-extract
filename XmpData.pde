@@ -12,15 +12,18 @@ import java.io.IOException;
 // https://developers.google.com/depthmap-metadata/reference
 // https://github.com/drewnoakes/metadata-extractor/wiki/Getting-Started-(Java)
 
-void imageToXmpSample(String url) {
-  xmpParser(imageToInputStream(url));
+byte[] bytes;
+int byteSize = 0;
+
+PImage imageToXmpData(String url) {
+  return xmpParser(imageToInputStream(url, "jpg"));
 }
 
-void xmpParser(InputStream imageStream) {
+PImage xmpParser(InputStream imageStream) {
   try {
     try {
       try {
-        xmpImageParser(imageStream);  
+        return xmpImageParser(imageStream);  
       } catch (ImageProcessingException eee) { 
         println(eee);
       }
@@ -30,18 +33,21 @@ void xmpParser(InputStream imageStream) {
   } catch (IOException e) { 
     println(e);
   }
+  return null;
 }
 
-InputStream imageToInputStream(String url) {
+InputStream imageToInputStream(String url, String imgType) {
   url = sketchPath() + "/data/" + url;
   println(url);
   BufferedImage origImg;
   try {
     origImg = ImageIO.read(new File(url));
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ImageIO.write(origImg,"png", os); 
-    println("Found bytes of size " + os.toByteArray().length);
-    InputStream returns = new ByteArrayInputStream(os.toByteArray());
+    ImageIO.write(origImg, imgType, os); 
+    bytes = os.toByteArray();
+    byteSize = bytes.length;
+    println("Raw bytes: " + bytes.length + " " + bytes[10000]);
+    InputStream returns = new ByteArrayInputStream(bytes);
     return returns;
   } catch (IOException e) { 
     println(e);
@@ -49,19 +55,34 @@ InputStream imageToInputStream(String url) {
   return null;
 }
 
-PImage xmpImageParser(InputStream imageStream) throws XMPException, ImageProcessingException, IOException {
-  // Extract metadata from the image
-  Metadata metadata = ImageMetadataReader.readMetadata(imageStream);
-  for (Directory directory : metadata.getDirectories()) {
-    for (Tag tag : directory.getTags()) {
-      System.out.println(tag);
-    }
+// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+byte[] extractSegment(byte[] segmentBytes, Metadata metadata, JpegSegmentType segmentType) {
+  for (XmpDirectory directory : metadata.getDirectoriesOfType(XmpDirectory.class)) {
+    // XMP in a JPEG file has a 29 byte preamble which is not valid XML.
+    final int preambleLength = 29;
+
+    ByteArrayReader reader = new ByteArrayReader(segmentBytes);
+
+    String preamble = new String(segmentBytes, 0, preambleLength);
+
+    byte[] xmlBytes = new byte[segmentBytes.length - preambleLength];
+    println("!!!!" + xmlBytes.length);
+    System.arraycopy(segmentBytes, 29, xmlBytes, 0, xmlBytes.length);
+    if (xmlBytes.length > 0) return xmlBytes;
   }
-  byte[] bytes = new byte[16836747];
-  XmpReader reader = new XmpReader();
-  reader.extract(bytes, metadata);
-  return imageFromBytes(bytes);
+  return null;
 }
+
+PImage xmpImageParser(InputStream imageStream) throws XMPException, ImageProcessingException, IOException {
+  Metadata metadata = ImageMetadataReader.readMetadata(imageStream);
+  byte[] xmlBytes = new byte[byteSize];
+  
+  return imageFromBytes(extractSegment(xmlBytes, metadata, null));
+}
+
+// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
 /**
  * Shows basic extraction and iteration of XMP data.
